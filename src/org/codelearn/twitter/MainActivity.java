@@ -1,15 +1,12 @@
 package org.codelearn.twitter;
 
-import android.os.Bundle;
 import android.app.Activity;
-import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-
-
-import org.codelearn.twitter.R;
-
 import android.widget.Button;
+import android.widget.EditText;
 
 public class MainActivity extends Activity {
 	Button _loginBtn;
@@ -22,10 +19,11 @@ public class MainActivity extends Activity {
 		_loginBtn.setOnClickListener(new View.OnClickListener() {
 		      @Override
 		      public void onClick(View v) {
-		        //This is a comment which does no good to your code. Feel free to remove it after you copy pasted this snippet.
-		        //Assignment - write logic to update the 'Login' text inside the button to 'Clicked'
-		    	  Intent intent = new Intent(MainActivity.this, TweetListActivity.class);
-		          startActivity(intent);
+		    	  
+		          		EditText username = ( EditText ) findViewById(R.id.fld_username);
+		    			  EditText password = ( EditText ) findViewById(R.id.fld_pwd);		  
+		    			  Log.d("Codelearn", "Username caught - " + username.getText().toString());
+		    			  Log.d("Codelearn", "Password caught - " + password.getText().toString());
 		      }
 		  });
 		
