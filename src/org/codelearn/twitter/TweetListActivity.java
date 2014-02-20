@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codelearn.twitter.models.AsyncFetchTweets;
 import org.codelearn.twitter.models.Tweet;
 
 import android.app.ListActivity;
@@ -51,26 +52,21 @@ public class TweetListActivity extends ListActivity{
 		{
 			
 		}
+	
+		renderTweets(tweetsRead);
+		AsyncFetchTweets asyc=new AsyncFetchTweets(this);
+		asyc.execute();
 		
-		try
-		{
-		FileOutputStream fos=openFileOutput(TWEETS_CACHE_FILE, MODE_PRIVATE);
-		ObjectOutputStream oos = new ObjectOutputStream(fos);
-	    oos.writeObject(tweets);
-	    oos.close();
-	    fos.close();
-		}
-		catch(Exception e)
-		{	
-		}
-		
-	tweetItemArrayAdapter = new TweetAdapter(this, tweetsRead);
-		setListAdapter(tweetItemArrayAdapter);
-		
+	
 		
 	}
 
-	
+	public void renderTweets(List<Tweet> tweets)
+	{
+		tweetItemArrayAdapter = new TweetAdapter(this, tweets);
+		setListAdapter(tweetItemArrayAdapter);
+		
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
