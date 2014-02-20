@@ -1,6 +1,7 @@
 package org.codelearn.twitter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -16,11 +17,13 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		_loginBtn = ( Button ) findViewById(R.id.btn_login);
+		 Intent intent=new Intent(this,TweetListActivity.class);
+		 startActivity(intent);
 		 
 		_loginBtn.setOnClickListener(new View.OnClickListener() {
 		      @Override
 		      public void onClick(View v) {
-		    	  
+		    	 
 		          		EditText username = ( EditText ) findViewById(R.id.fld_username);
 		    			  EditText password = ( EditText ) findViewById(R.id.fld_pwd);		  
 		    			  SharedPreferences prefs = getSharedPreferences("codelearn_twitter", MODE_PRIVATE);
@@ -30,6 +33,9 @@ public class MainActivity extends Activity {
 		    			  edit.commit();
 		    			  edit.putString("pass",password.getText().toString());
 		    			  edit.commit();
+		    			 
+		    			  Intent intent = new Intent(MainActivity.this, TweetListActivity.class);
+		    			  	          startActivity(intent);
 		    			  
 		    			  
 		      }

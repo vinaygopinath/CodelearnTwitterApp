@@ -1,6 +1,8 @@
 package org.codelearn.twitter;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +41,18 @@ public class TweetListActivity extends ListActivity{
 		}
 		
 		try
+		
+		{
+			FileInputStream fis = openFileInput(TWEETS_CACHE_FILE);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			tweetsRead = ( List<Tweet> ) ois.readObject();
+		}
+		catch(Exception e)
+		{
+			
+		}
+		
+		try
 		{
 		FileOutputStream fos=openFileOutput(TWEETS_CACHE_FILE, MODE_PRIVATE);
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -49,10 +63,10 @@ public class TweetListActivity extends ListActivity{
 		catch(Exception e)
 		{	
 		}
-	tweetItemArrayAdapter = new TweetAdapter(this, tweets);
+		
+	tweetItemArrayAdapter = new TweetAdapter(this, tweetsRead);
 		setListAdapter(tweetItemArrayAdapter);
-		Log.d("TweetRead Size In TweetListActivity",""+tweetsRead.size());
-	
+		
 		
 	}
 
