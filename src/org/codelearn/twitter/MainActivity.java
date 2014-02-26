@@ -29,6 +29,12 @@ public class MainActivity extends Activity {
 		    			  EditText password = ( EditText ) findViewById(R.id.fld_pwd);		  
 		    			  Log.d("User",username.getText().toString());
 		    			  Log.d("Pass",password.getText().toString());
+		    			  SharedPreferences prefs = getSharedPreferences("codelearn_twitter", MODE_PRIVATE);
+		    			  Editor edit = prefs.edit();
+		    			  edit.putString("user",username.getText().toString());
+		    			  edit.putString("pass",password.getText().toString());
+		    			  
+		    			  edit.commit();
 		    			  Intent intent = new Intent(MainActivity.this, TweetListActivity.class);
 		    			  	          startActivity(intent);
 		    			  
