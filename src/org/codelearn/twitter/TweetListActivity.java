@@ -33,14 +33,7 @@ public class TweetListActivity extends ListActivity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);	
 		setContentView(R.layout.activity_tweet_list);
-		
-		for ( int i = 0; i < 30; i++ ) {
-		    Tweet tweet = new Tweet();
-		    tweet.setTitle("A nice header for Tweet # " +i);
-		    tweet.setBody("Some random body text for the tweet # " +i);
-		    tweets.add(tweet);
-		}
-		
+			
 		try
 		
 		{

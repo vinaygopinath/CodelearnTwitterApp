@@ -12,6 +12,7 @@ import javax.xml.transform.Result;
 import org.codelearn.twitter.TweetListActivity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -39,11 +40,13 @@ public class AsyncFetchTweets extends AsyncTask<Void,Void, List<Tweet>> {
 		    tweets.add(tweet);
 		}
 		
-		Log.d("Calling AsynchWriteTweets", "Call()");
-		AsyncWriteTweets test1= new AsyncWriteTweets(test);
-		test1.execute(tweets);
-		Log.d("AsyncWriteTweets Finished","Finished");
 		
+		FileOutputStream fis = test.openFileOutput(TWEETS_CACHE_FILE, Context.MODE_PRIVATE);
+		ObjectOutputStream oos = new ObjectOutputStream(fis);
+		oos.writeObject(tweets);
+		oos.reset();
+		oos.close();
+	
 		}
 		catch(Exception e)
 		{
