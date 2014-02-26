@@ -68,7 +68,6 @@ public class TweetListActivity extends ListActivity {
 	        }
 	    }
 
-		
 		tweetItemArrayAdapter = new TweetAdapter(this, tweets);
 		setListAdapter(tweetItemArrayAdapter);
 	}
