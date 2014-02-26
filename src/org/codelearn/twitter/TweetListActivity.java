@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codelearn.twitter.models.AsyncFetchTweets;
 import org.codelearn.twitter.models.Tweet;
 
 import android.app.ListActivity;
@@ -31,15 +32,7 @@ public class TweetListActivity extends ListActivity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);	
-		setContentView(R.layout.activity_tweet_list);
-		
-		for ( int i = 0; i < 30; i++ ) {
-		    Tweet tweet = new Tweet();
-		    tweet.setTitle("A nice header for Tweet # " +i);
-		    tweet.setBody("Some random body text for the tweet # " +i);
-		    tweets.add(tweet);
-		}
-		
+		setContentView(R.layout.activity_tweet_list);	
 		try
 		
 		{
@@ -52,21 +45,11 @@ public class TweetListActivity extends ListActivity{
 			
 		}
 		
-		try
-		{
-		FileOutputStream fos=openFileOutput(TWEETS_CACHE_FILE, MODE_PRIVATE);
-		ObjectOutputStream oos = new ObjectOutputStream(fos);
-	    oos.writeObject(tweets);
-	    oos.close();
-	    fos.close();
-		}
-		catch(Exception e)
-		{	
-		}
+		
 		
 	tweetItemArrayAdapter = new TweetAdapter(this, tweetsRead);
 		setListAdapter(tweetItemArrayAdapter);
-		
+		AsyncFetchTweets async=new AsyncFetchTweets(this);
 		
 	}
 
