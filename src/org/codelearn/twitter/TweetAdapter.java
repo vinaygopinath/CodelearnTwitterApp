@@ -20,7 +20,7 @@ public class TweetAdapter extends ArrayAdapter<Tweet> {
          inflater = activity.getWindow().getLayoutInflater();
          tweetsLocal = tweets;
      }
-     
+    
      @Override
      public View getView(int position, View convertView, ViewGroup parent){
          View row = inflater.inflate(R.layout.row_tweet, parent, false);
