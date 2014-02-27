@@ -24,7 +24,7 @@ public class MainActivity extends Activity {
 		String s1=prefs.getString("pass", null);
 		Log.d("asd"+s2,"asda"+s1);
 		
-		if(s2=null && s1!=null)
+		if(s2!=null && s1!=null)
 		{
 			  Intent intent = new Intent(MainActivity.this, TweetListActivity.class);
  	          startActivity(intent);
