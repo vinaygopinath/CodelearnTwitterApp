@@ -47,10 +47,12 @@ public class TweetListActivity extends ListActivity{
 		
 		
 		
-	tweetItemArrayAdapter = new TweetAdapter(this, tweetsRead);
+		tweetItemArrayAdapter = new TweetAdapter(this, tweetsRead);
+	
 		setListAdapter(tweetItemArrayAdapter);
-		AsyncFetchTweets async=new AsyncFetchTweets(this);
 		
+		AsyncFetchTweets async=new AsyncFetchTweets(this);
+		async.execute();
 	}
 
 	

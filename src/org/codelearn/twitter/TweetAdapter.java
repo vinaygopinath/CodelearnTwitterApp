@@ -14,6 +14,12 @@ public class TweetAdapter extends ArrayAdapter<Tweet> {
 
 	 private LayoutInflater inflater;
 	 private List<Tweet> tweetsLocal;
+	 
+	 public TweetAdapter(Activity activity,String[] str){
+         super(activity, R.layout.row_tweet);
+         inflater = activity.getWindow().getLayoutInflater();
+       
+     }
      
      public TweetAdapter(Activity activity, List<Tweet> tweets){
          super(activity, R.layout.row_tweet, tweets);
