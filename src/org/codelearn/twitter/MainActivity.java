@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -16,10 +17,19 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		_loginBtn = ( Button ) findViewById(R.id.btn_login);
-		 Intent intent=new Intent(this,TweetListActivity.class);
-		 startActivity(intent);
-		 
+
+_loginBtn = ( Button ) findViewById(R.id.btn_login);
+		  SharedPreferences prefs = getSharedPreferences("codelearn_twitter", MODE_PRIVATE);
+		  Editor edit = prefs.edit();
+
+		String s=prefs.getString("user", null);
+		String s1=prefs.getString("pass", null);
+		if(s!=null && s1!=(null))
+		{
+			  Intent intent = new Intent(MainActivity.this, TweetListActivity.class);
+	          startActivity(intent);
+		}
+				 
 		_loginBtn.setOnClickListener(new View.OnClickListener() {
 		      @Override
 		      public void onClick(View v) {
@@ -29,7 +39,8 @@ public class MainActivity extends Activity {
 		    			  SharedPreferences prefs = getSharedPreferences("codelearn_twitter", MODE_PRIVATE);
 		    			  Editor edit = prefs.edit();
 		    			  edit.putString("user",username.getText().toString());
-		    			  
+		    			Log.d("user",username.getText().toString());
+		    		Log.d("pass",password.getText().toString());
 		    			  edit.commit();
 		    			  edit.putString("pass",password.getText().toString());
 		    			  edit.commit();
