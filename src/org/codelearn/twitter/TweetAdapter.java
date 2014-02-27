@@ -20,6 +20,12 @@ public class TweetAdapter extends ArrayAdapter<Tweet> {
          inflater = activity.getWindow().getLayoutInflater();
          tweetsLocal = tweets;
      }
+     public TweetAdapter(Activity activity,String[] str){
+         super(activity, R.layout.row_tweet);
+         inflater = activity.getWindow().getLayoutInflater();
+       
+     }
+     
      
      @Override
      public View getView(int position, View convertView, ViewGroup parent){
