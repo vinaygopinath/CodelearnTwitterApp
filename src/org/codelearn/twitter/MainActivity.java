@@ -11,24 +11,33 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+
 public class MainActivity extends Activity {
 	Button _loginBtn;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		_loginBtn = ( Button ) findViewById(R.id.btn_login);
-		  SharedPreferences prefs = getSharedPreferences("codelearn_twitter", MODE_PRIVATE);
+		
+		 SharedPreferences prefs = getSharedPreferences("codelearn_twitter", MODE_PRIVATE);
 		  Editor edit = prefs.edit();
 
-		String s=prefs.getString("user", null);
+		  String s2=prefs.getString("user", null);
 		String s1=prefs.getString("pass", null);
-		if(s.equals(null)==false && s1.equals(null)==false)
+		Log.d("asd"+s2,"asda"+s1);
+		
+		if(s2=null && s1!=null)
 		{
 			  Intent intent = new Intent(MainActivity.this, TweetListActivity.class);
-  	          startActivity(intent);
+ 	          startActivity(intent);
 		}
 		
+	
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		
+		
+		
+		_loginBtn = ( Button ) findViewById(R.id.btn_login);
+		 
 		
 		_loginBtn.setOnClickListener(new View.OnClickListener() {
 		      @Override
