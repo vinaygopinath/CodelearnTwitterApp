@@ -23,7 +23,7 @@ public class MainActivity extends Activity {
 
 		String s=prefs.getString("user", null);
 		String s1=prefs.getString("pass", null);
-		if(s.equals(null)==false && s1.equals(null)==false)
+		if(s!=null && s1!=null)
 		{
 			  Intent intent = new Intent(MainActivity.this, TweetListActivity.class);
   	          startActivity(intent);
