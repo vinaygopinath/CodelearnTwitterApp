@@ -1,9 +1,11 @@
-package org.codelearn.twitter.models;
+package org.codelearn.twitter;
 
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.codelearn.twitter.models.Tweet;
 
 import android.app.Activity;
 import android.database.CursorJoiner.Result;

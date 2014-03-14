@@ -2,8 +2,9 @@ package org.codelearn.twitter;
 
 import java.util.List;
 
-import android.app.Activity;
 import org.codelearn.twitter.models.Tweet;
+
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
