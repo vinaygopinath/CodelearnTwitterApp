@@ -7,7 +7,6 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codelearn.twitter.models.AsyncFetchTweets;
 import org.codelearn.twitter.models.Tweet;
 
 import android.app.ListActivity;
