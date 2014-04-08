@@ -10,7 +10,7 @@
 
     <TextView
         android:id="@+id/header"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/hello_world" />
 	
@@ -55,8 +55,8 @@
          />
 
     </LinearLayout>
-	
-    	<Button
+
+      <Button
         android:id="@+id/btn_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
