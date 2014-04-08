@@ -14,7 +14,7 @@
            android:layout_gravity       ="center_horizontal" />
 	
        <LinearLayout 
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginLeft="5dp"
@@ -24,7 +24,7 @@
         android:padding="10dp" >
             <TextView
                 android:id              ="@+id/tweetTitle"
-                android:layout_width    ="fill_parent"
+                android:layout_width    ="match_parent"
                 android:layout_height   ="wrap_content"
                 android:text            ="Header Text"
                 android:textColor       ="#181717"
@@ -32,7 +32,7 @@
                 android:textStyle       ="bold" />
             <TextView
                 android:id              ="@+id/tweetBody"
-                android:layout_width    ="fill_parent"
+                android:layout_width    ="match_parent"
                 android:layout_height   ="wrap_content"
                 android:layout_gravity  ="center_vertical"
                 android:layout_marginTop="5dp"
@@ -41,7 +41,7 @@
                 android:textSize        ="14sp" />
             <TextView
                 android:id              ="@+id/tweetDate"
-                android:layout_width    ="fill_parent"
+                android:layout_width    ="match_parent"
                 android:layout_height   ="wrap_content"
                 android:layout_gravity  ="center_vertical"
                 android:layout_marginTop="5dp"
