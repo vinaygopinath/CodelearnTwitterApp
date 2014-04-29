@@ -5,16 +5,24 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codelearn.twitter.models.CodelearnTwitterAPI;
 import org.codelearn.twitter.models.Tweet;
 
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 /**
@@ -26,6 +34,7 @@ import android.widget.ListView;
 public class TweetListActivity extends ListActivity {
 
   private static final String TAG = "CODELEARN_TWEET_LIST";
+  private static final String SERVER_ADDRESS = "http://app-dev-challenge-endpoint.herokuapp.com";
 
   private ArrayAdapter<Tweet> _tweetAdapter;
   private List<Tweet> _tweetList = new ArrayList<Tweet>();
@@ -57,8 +66,17 @@ public class TweetListActivity extends ListActivity {
       }
     }
     renderTweets(cachedTweetsList);
-    AsyncFetchTweets asyc = new AsyncFetchTweets(this);
-    asyc.execute();
+
+    getLatestTweets();
+  }
+
+  private void getLatestTweets() {
+    /* Create an instance of CodelearnTwitterAPI */
+    CodelearnTwitterAPI codelearnTwitterAPI =
+        new RestAdapter.Builder().setEndpoint(SERVER_ADDRESS).build()
+            .create(CodelearnTwitterAPI.class);
+
+    codelearnTwitterAPI.getTweets(_tweetListCallback);
   }
 
   /**
@@ -72,7 +90,7 @@ public class TweetListActivity extends ListActivity {
    */
   public void renderTweets(List<Tweet> additionalTweetList) {
     for (Tweet tweet : additionalTweetList) {
-      _tweetList.add(tweet);
+      _tweetList.add(0, tweet);
     }
     _tweetAdapter.notifyDataSetChanged();
   }
@@ -83,5 +101,44 @@ public class TweetListActivity extends ListActivity {
     intent.putExtra("SelectedTweet", _tweetAdapter.getItem(position));
     startActivity(intent);
 
+  }
+
+  /**
+   * The callback that is invoked when the "getTweets" network call is completed. If the call was
+   * successful, the fetched tweets are cached and then added to the ListView. In case of failure, a
+   * Toast message is displayed to the user.
+   */
+  private Callback<List<Tweet>> _tweetListCallback = new Callback<List<Tweet>>() {
+
+    @Override
+    public void failure(RetrofitError arg0) {
+      Toast.makeText(getApplicationContext(), "Unable to fetch tweets at this time",
+          Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void success(List<Tweet> fetchedTweetList, Response response) {
+      AsyncWriteTweets writeTask = new AsyncWriteTweets(TweetListActivity.this);
+      writeTask.execute(fetchedTweetList);
+
+      renderTweets(fetchedTweetList);
+    }
+  };
+
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.tweet_list, menu);
+    return true;
+  };
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    if (item.getItemId() == R.id.action_compose) {
+      Intent composeIntent = new Intent(this, ComposeTweetActivity.class);
+      startActivity(composeIntent);
+      return true;
+    } else if (item.getItemId() == R.id.action_refresh) {
+      getLatestTweets();
+    }
+    return super.onOptionsItemSelected(item);
   }
 }
