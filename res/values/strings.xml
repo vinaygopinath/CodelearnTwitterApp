@@ -10,5 +10,6 @@
     <string name="lbl_enter_pwd">Enter your password</string>
     <string name="lbl_login">Login</string>
     <string name="no_tweet_found">No Tweet Found</string>
+    <string name="lbl_loading">Loading</string>
 
 </resources>
