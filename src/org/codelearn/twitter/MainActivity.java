@@ -31,7 +31,7 @@ public class MainActivity extends Activity {
   private SharedPreferences _prefs;
 
   private static final String KEY_AUTHTOKEN = "key_authtoken";
-  private static final String SERVER_ADDRESS = "http://10.0.2.2:8080";
+  private static final String SERVER_ADDRESS = "http://app-dev-challenge-endpoint.herokuapp.com";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
