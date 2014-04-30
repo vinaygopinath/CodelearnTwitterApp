@@ -72,7 +72,7 @@ public class TweetListActivity extends ListActivity {
    */
   public void renderTweets(List<Tweet> additionalTweetList) {
     for (Tweet tweet : additionalTweetList) {
-      _tweetList.add(tweet);
+      _tweetList.add(0, tweet);
     }
     _tweetAdapter.notifyDataSetChanged();
   }
