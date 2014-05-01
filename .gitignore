@@ -8,3 +8,8 @@
 /bin/res/crunch/drawable-xhdpi/ic_launcher.png
 /bin/res/crunch/drawable-xxhdpi/ic_launcher.png
 /bin/resources.ap_
+/bin/dexedLibs/gson-2.2.4-8b100ca3a6c9392d86825e5658f8100f.jar
+/bin/dexedLibs/retrofit-1.5.0-0150d943ab6e641efa279e42c7ec86fd.jar
+/bin/dexedLibs/twitter4j-async-4.0.1-2e9b84e3ddeb0f41bc9f245b2ebf45dc.jar
+/bin/dexedLibs/twitter4j-core-4.0.1-1746a98e16ba7944d9e0106a5f2a7edf.jar
+/bin/res/crunch/drawable-mdpi/ic_menu_refresh.png

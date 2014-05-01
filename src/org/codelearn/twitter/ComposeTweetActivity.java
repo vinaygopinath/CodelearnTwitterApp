@@ -1,17 +1,17 @@
 package org.codelearn.twitter;
 
-import org.codelearn.twitter.models.CodelearnTwitterAPI;
-import org.codelearn.twitter.models.Tweet;
-
-import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RestAdapter.LogLevel;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.conf.Configuration;
+import twitter4j.conf.ConfigurationBuilder;
 import android.app.Activity;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -68,38 +68,53 @@ public class ComposeTweetActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (_composeEdit.getText() != null) {
-          CodelearnTwitterAPI codelearnTwitterAPI =
-              new RestAdapter.Builder().setEndpoint(SERVER_ADDRESS).setLogLevel(LogLevel.FULL)
-                  .build().create(CodelearnTwitterAPI.class);
-
-          Tweet tweet = new Tweet();
-          tweet.setBody(_composeEdit.getText().toString());
-          /* A random Tweet title based on the current time */
-          tweet.setTitle("Tweet #" + (System.currentTimeMillis() / 1000));
-
-          codelearnTwitterAPI.submitTweet(tweet, _submitTweetCallback);
+          new SubmitTweetTask().execute(_composeEdit.getText().toString());
         }
       }
     });
   }
 
-  /**
-   * The callback that is invoked when the submit tweet network call is completed. A simple Toast
-   * message is displayed to the user conveying the result of the network call.
-   */
-  private Callback<Void> _submitTweetCallback = new Callback<Void>() {
+  private class SubmitTweetTask extends AsyncTask<String, Void, Void> {
+
+    private twitter4j.Status createdStatus = null;
 
     @Override
-    public void failure(RetrofitError arg0) {
-      Toast.makeText(getApplicationContext(),
-          "Unable to submit tweet at this time. Please try again", Toast.LENGTH_LONG).show();
+    protected Void doInBackground(String... params) {
+      String status = params[0];
+      SharedPreferences prefs = getSharedPreferences("codelearn_twitter", MODE_PRIVATE);
+      String accToken = prefs.getString(TwitterConstants.PREF_KEY_TOKEN, "");
+      String accTokenSecret = prefs.getString(TwitterConstants.PREF_KEY_SECRET, "");
+
+      Log.d("Codelearn", "acctoken = " + accToken);
+      Log.d("Codelearn", "acctokenSecret = " + accTokenSecret);
+
+      ConfigurationBuilder confbuilder = new ConfigurationBuilder();
+      Configuration conf =
+          confbuilder.setOAuthConsumerKey(TwitterConstants.CONSUMER_KEY)
+              .setOAuthConsumerSecret(TwitterConstants.CONSUMER_SECRET)
+              .setOAuthAccessToken(accToken).setOAuthAccessTokenSecret(accTokenSecret).build();
+      Twitter twitter = new TwitterFactory(conf).getInstance();
+
+      try {
+        createdStatus = twitter.updateStatus(status);
+      } catch (TwitterException e) {
+        e.printStackTrace();
+      }
+
+      return null;
     }
 
     @Override
-    public void success(Void arg0, Response arg1) {
-      Toast.makeText(getApplicationContext(), "Tweet was successfully posted", Toast.LENGTH_LONG)
-          .show();
-      finish();
+    protected void onPostExecute(Void result) {
+      if (createdStatus != null) {
+        Toast.makeText(getApplicationContext(), "Tweet was successfully posted", Toast.LENGTH_LONG)
+            .show();
+        finish();
+      } else {
+        Toast.makeText(getApplicationContext(),
+            "Unable to submit tweet at this time. Please try again", Toast.LENGTH_LONG).show();
+      }
     }
-  };
+
+  }
 }

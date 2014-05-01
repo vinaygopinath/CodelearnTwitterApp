@@ -2,8 +2,7 @@ package org.codelearn.twitter;
 
 import java.util.List;
 
-import org.codelearn.twitter.models.Tweet;
-
+import twitter4j.Status;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,12 +14,12 @@ import android.widget.TextView;
  * A custom {@link ArrayAdapter} for Tweet objects. This implementation inflates a custom
  * LinearLayout to render the Tweet at a given position.
  */
-public class TweetAdapter extends ArrayAdapter<Tweet> {
+public class TweetAdapter extends ArrayAdapter<Status> {
 
   private LayoutInflater inflater;
-  private List<Tweet> tweetsLocal;
+  private List<Status> tweetsLocal;
 
-  public TweetAdapter(Activity activity, List<Tweet> tweets) {
+  public TweetAdapter(Activity activity, List<Status> tweets) {
     super(activity, R.layout.row_tweet, tweets);
     inflater = activity.getWindow().getLayoutInflater();
     tweetsLocal = tweets;
@@ -36,10 +35,10 @@ public class TweetAdapter extends ArrayAdapter<Tweet> {
   public View getView(int position, View convertView, ViewGroup parent) {
     View row = inflater.inflate(R.layout.row_tweet, parent, false);
     TextView title = (TextView) row.findViewById(R.id.tweetTitle);
-    Tweet tweet = tweetsLocal.get(position);
-    title.setText(tweet.getTitle());
+    Status tweet = tweetsLocal.get(position);
+    title.setText(tweet.getUser().getName());
     TextView body = (TextView) row.findViewById(R.id.textView2);
-    body.setText(tweet.getBody());
+    body.setText(tweet.getText());
     return row;
   }
 

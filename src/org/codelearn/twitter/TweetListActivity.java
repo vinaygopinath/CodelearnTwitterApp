@@ -5,16 +5,18 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codelearn.twitter.models.CodelearnTwitterAPI;
-import org.codelearn.twitter.models.Tweet;
-
-import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import twitter4j.ResponseList;
+import twitter4j.Status;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.conf.Configuration;
+import twitter4j.conf.ConfigurationBuilder;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -22,37 +24,49 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 
 /**
  * An {@link Activity} that displays a list of tweets. An empty {@link TweetAdapter} is created,
  * following which an attempt is made to show cached tweets (if any). Further,
- * {@link AsyncFetchTweets} is called to asynchronously update the ListView with new tweets.
+ * {@link FetchTweetsTask} is called to asynchronously update the ListView with new tweets.
  * 
  */
 public class TweetListActivity extends ListActivity {
 
   private static final String TAG = "CODELEARN_TWEET_LIST";
-  private static final String SERVER_ADDRESS = "http://app-dev-challenge-endpoint.herokuapp.com";
 
-  private ArrayAdapter<Tweet> _tweetAdapter;
-  private List<Tweet> _tweetList = new ArrayList<Tweet>();
+  private ArrayAdapter<twitter4j.Status> _tweetAdapter;
+  private List<twitter4j.Status> _tweetList = new ArrayList<twitter4j.Status>();
+  private SharedPreferences _prefs;
+  private Twitter _twitter;
   private static final String TWEETS_CACHE_FILE = "tweet_cache.ser";
+  private FetchTweetsTask _fetchTweetsTask;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_tweet_list);
+    _prefs = getSharedPreferences("codelearn_twitter", MODE_PRIVATE);
 
     _tweetAdapter = new TweetAdapter(this, _tweetList);
     setListAdapter(_tweetAdapter);
 
+    String accToken = _prefs.getString(TwitterConstants.PREF_KEY_TOKEN, "");
+    String accTokenSecret = _prefs.getString(TwitterConstants.PREF_KEY_SECRET, "");
+
+    ConfigurationBuilder confbuilder = new ConfigurationBuilder();
+    Configuration conf =
+        confbuilder.setOAuthConsumerKey(TwitterConstants.CONSUMER_KEY)
+            .setOAuthConsumerSecret(TwitterConstants.CONSUMER_SECRET).setOAuthAccessToken(accToken)
+            .setOAuthAccessTokenSecret(accTokenSecret).build();
+    _twitter = new TwitterFactory(conf).getInstance();
+
     ObjectInputStream ois = null;
-    List<Tweet> cachedTweetsList = new ArrayList<Tweet>();
+    List<twitter4j.Status> cachedTweetsList = new ArrayList<twitter4j.Status>();
     try {
       ois = new ObjectInputStream(openFileInput(TWEETS_CACHE_FILE));
-      cachedTweetsList = (List<Tweet>) ois.readObject();
+      cachedTweetsList = (List<twitter4j.Status>) ois.readObject();
     } catch (Exception e) {
       Log.e(TAG, "An error occurred while trying to retrieve cached tweets " + e.getMessage());
       e.printStackTrace();
@@ -70,13 +84,37 @@ public class TweetListActivity extends ListActivity {
     getLatestTweets();
   }
 
+  /**
+   * This method ensures that only one AsyncTask is running at a time to fetch new tweets.
+   */
   private void getLatestTweets() {
-    /* Create an instance of CodelearnTwitterAPI */
-    CodelearnTwitterAPI codelearnTwitterAPI =
-        new RestAdapter.Builder().setEndpoint(SERVER_ADDRESS).build()
-            .create(CodelearnTwitterAPI.class);
+    if (_fetchTweetsTask == null) {
+      _fetchTweetsTask = new FetchTweetsTask();
+      _fetchTweetsTask.execute();
+    }
+  }
 
-    codelearnTwitterAPI.getTweets(_tweetListCallback);
+  private class FetchTweetsTask extends AsyncTask<Void, Void, Void> {
+
+    private ResponseList<twitter4j.Status> timelineTweets;
+
+    @Override
+    protected Void doInBackground(Void... params) {
+      try {
+        timelineTweets = _twitter.getHomeTimeline();
+        new AsyncWriteTweets(TweetListActivity.this).execute(timelineTweets);
+      } catch (TwitterException e) {
+        e.printStackTrace();
+      }
+      return null;
+    }
+
+    @Override
+    protected void onPostExecute(Void result) {
+      _fetchTweetsTask = null;
+      renderTweets(timelineTweets);
+    }
+
   }
 
   /**
@@ -88,10 +126,14 @@ public class TweetListActivity extends ListActivity {
    * 
    * @param additionalTweetList a List of Tweet objects that are to be added to the ListView.
    */
-  public void renderTweets(List<Tweet> additionalTweetList) {
-    for (Tweet tweet : additionalTweetList) {
+  public void renderTweets(List<Status> additionalTweetList) {
+    if (additionalTweetList == null) {
+      return;
+    }
+    for (Status tweet : additionalTweetList) {
       _tweetList.add(tweet);
     }
+
     _tweetAdapter.notifyDataSetChanged();
   }
 
@@ -102,28 +144,6 @@ public class TweetListActivity extends ListActivity {
     startActivity(intent);
 
   }
-
-  /**
-   * The callback that is invoked when the "getTweets" network call is completed. If the call was
-   * successful, the fetched tweets are cached and then added to the ListView. In case of failure, a
-   * Toast message is displayed to the user.
-   */
-  private Callback<List<Tweet>> _tweetListCallback = new Callback<List<Tweet>>() {
-
-    @Override
-    public void failure(RetrofitError arg0) {
-      Toast.makeText(getApplicationContext(), "Unable to fetch tweets at this time",
-          Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void success(List<Tweet> fetchedTweetList, Response response) {
-      AsyncWriteTweets writeTask = new AsyncWriteTweets(TweetListActivity.this);
-      writeTask.execute(fetchedTweetList);
-
-      renderTweets(fetchedTweetList);
-    }
-  };
 
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.tweet_list, menu);
