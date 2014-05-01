@@ -1,20 +1,23 @@
 package org.codelearn.twitter;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codelearn.twitter.models.CodelearnTwitterAPI;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.codelearn.twitter.models.Tweet;
 
-import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -23,6 +26,9 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 
 /**
@@ -71,12 +77,7 @@ public class TweetListActivity extends ListActivity {
   }
 
   private void getLatestTweets() {
-    /* Create an instance of CodelearnTwitterAPI */
-    CodelearnTwitterAPI codelearnTwitterAPI =
-        new RestAdapter.Builder().setEndpoint(SERVER_ADDRESS).build()
-            .create(CodelearnTwitterAPI.class);
-
-    codelearnTwitterAPI.getTweets(_tweetListCallback);
+    new FetchTweetsTask().execute();
   }
 
   /**
@@ -103,27 +104,41 @@ public class TweetListActivity extends ListActivity {
 
   }
 
-  /**
-   * The callback that is invoked when the "getTweets" network call is completed. If the call was
-   * successful, the fetched tweets are cached and then added to the ListView. In case of failure, a
-   * Toast message is displayed to the user.
-   */
-  private Callback<List<Tweet>> _tweetListCallback = new Callback<List<Tweet>>() {
+  private class FetchTweetsTask extends AsyncTask<Void, Void, Void> {
+
+    private List<Tweet> fetchedTweetList;
 
     @Override
-    public void failure(RetrofitError arg0) {
-      Toast.makeText(getApplicationContext(), "Unable to fetch tweets at this time",
-          Toast.LENGTH_LONG).show();
+    protected Void doInBackground(Void... params) {
+      HttpClient client = new DefaultHttpClient();
+      HttpGet getReq = new HttpGet(SERVER_ADDRESS + "/tweets");
+      try {
+        HttpResponse response = client.execute(getReq);
+        if (response != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+          Type listType = new TypeToken<ArrayList<Tweet>>() {}.getType();
+          fetchedTweetList =
+              new Gson().fromJson(new InputStreamReader(response.getEntity().getContent()),
+                  listType);
+          AsyncWriteTweets writeTask = new AsyncWriteTweets(TweetListActivity.this);
+          writeTask.execute(fetchedTweetList);
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      return null;
     }
 
     @Override
-    public void success(List<Tweet> fetchedTweetList, Response response) {
-      AsyncWriteTweets writeTask = new AsyncWriteTweets(TweetListActivity.this);
-      writeTask.execute(fetchedTweetList);
+    protected void onPostExecute(Void result) {
 
-      renderTweets(fetchedTweetList);
+      if (fetchedTweetList != null) {
+        renderTweets(fetchedTweetList);
+      } else {
+        Toast.makeText(getApplicationContext(), "Unable to fetch tweets at this time",
+            Toast.LENGTH_LONG).show();
+      }
     }
-  };
+  }
 
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.tweet_list, menu);
